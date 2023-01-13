@@ -22,3 +22,7 @@ springdoc:
     path: /docs/swagger-ui.html
   api-docs:
     path: /docs/api-docs
+value:
+  aws-access-key-id: ${AWS_ACCESS_KEY_ID:}
+  aws-secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
+  front-end-base-url: ${FRONT_END_BASE_URL:}
