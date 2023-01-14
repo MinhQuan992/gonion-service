@@ -45,4 +45,11 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<ErrorResponse> conflictException(Exception exception) {
     return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.CONFLICT);
   }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(CannotSendEmailException.class)
+  public ResponseEntity<ErrorResponse> internalServerErrorException(Exception exception) {
+    return new ResponseEntity<>(
+        new ErrorResponse(exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }

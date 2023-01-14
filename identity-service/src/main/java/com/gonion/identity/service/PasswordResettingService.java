@@ -15,6 +15,7 @@ import com.gonion.identity.common.Constants;
 import com.gonion.identity.entity.Mail;
 import com.gonion.identity.entity.PasswordResetToken;
 import com.gonion.identity.entity.User;
+import com.gonion.identity.exception.CannotSendEmailException;
 import com.gonion.identity.exception.NotFoundException;
 import com.gonion.identity.framework.dto.GeneralResponse;
 import com.gonion.identity.framework.dto.passwordresetting.VerifyEmailRequest;
@@ -85,7 +86,7 @@ public class PasswordResettingService {
     Mail mail = Mail.builder()
         .mailFrom(Constants.SENDER_EMAIL)
         .mailTo(email)
-        .mailSubject("GoNion Management | Reset Password")
+        .mailSubject("Reset Your Password")
         .mailContent(createMailContent(fullName, resetToken))
         .build();
     try {
@@ -115,6 +116,7 @@ public class PasswordResettingService {
       log.info("Email sent");
     } catch (Exception ex) {
       log.error("The email was not sent. Error message: {}", ex.getMessage());
+      throw new CannotSendEmailException("Error occurred when sending email.");
     }
   }
 
@@ -123,9 +125,12 @@ public class PasswordResettingService {
         Hi %s,
         <br/>
         <br/>
-        Please click on this link to reset your password: %s/reset-password/%s.
+        Please open this link to reset your password: %s/reset-password?token=%s.
         <br/>
         This link will be expired after 10 minutes. If it is expired, you must get another link.
+        <br/>
+        <br/>
+        If you didn't ask to reset your password, you can safely ignore this email.
         <br/>
         <br/>
         Best regards,
