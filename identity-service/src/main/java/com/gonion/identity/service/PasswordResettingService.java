@@ -16,17 +16,23 @@ import com.gonion.identity.entity.Mail;
 import com.gonion.identity.entity.PasswordResetToken;
 import com.gonion.identity.entity.User;
 import com.gonion.identity.exception.CannotSendEmailException;
+import com.gonion.identity.exception.ExpiredResetTokenException;
+import com.gonion.identity.exception.InvalidResetTokenException;
 import com.gonion.identity.exception.NotFoundException;
 import com.gonion.identity.framework.dto.GeneralResponse;
+import com.gonion.identity.framework.dto.passwordresetting.ResetPasswordRequest;
 import com.gonion.identity.framework.dto.passwordresetting.VerifyEmailRequest;
+import com.gonion.identity.framework.dto.passwordresetting.VerifyTokenRequest;
 import com.gonion.identity.repository.PasswordResetTokenRepository;
 import com.gonion.identity.repository.UserRepository;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +41,7 @@ import org.springframework.stereotype.Service;
 public class PasswordResettingService {
   private final UserRepository userRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Value("${value.aws-access-key-id}")
   private String awsAccessKeyId;
@@ -78,6 +85,7 @@ public class PasswordResettingService {
 
   private PasswordResetToken updateCurrentResetToken(PasswordResetToken passwordResetToken) {
     Date expiryTime = new Date(System.currentTimeMillis() + Constants.RESET_TOKEN_EXPIRATION_TIME);
+    passwordResetToken.setToken(UUID.randomUUID().toString());
     passwordResetToken.setExpiryTime(expiryTime);
     return passwordResetTokenRepository.save(passwordResetToken);
   }
@@ -138,5 +146,35 @@ public class PasswordResettingService {
         The GoNion Team
         """;
     return String.format(mailTemplate, fullName, frontEndBaseUrl, token);
+  }
+
+  public GeneralResponse verifyToken(VerifyTokenRequest request) {
+    PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getToken())
+        .orElseThrow(() -> new InvalidResetTokenException("This token is invalid."));
+    verifyExpiration(resetToken);
+    return GeneralResponse.builder()
+        .message("This token is OK.")
+        .build();
+  }
+
+  public GeneralResponse resetPassword(ResetPasswordRequest request) {
+    PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getToken())
+        .orElseThrow(() -> new InvalidResetTokenException("This token is invalid."));
+    verifyExpiration(resetToken);
+
+    User user = resetToken.getUser();
+    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    userRepository.save(user);
+
+    return GeneralResponse.builder()
+        .message("The password has been reset.")
+        .build();
+  }
+
+  private void verifyExpiration(PasswordResetToken resetToken) {
+    Calendar calendar = Calendar.getInstance();
+    if (resetToken.getExpiryTime().before(calendar.getTime())) {
+      throw new ExpiredResetTokenException("This token is expired.");
+    }
   }
 }

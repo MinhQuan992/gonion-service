@@ -34,6 +34,14 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
   }
 
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({
+      InvalidResetTokenException.class,
+      ExpiredResetTokenException.class})
+  public ResponseEntity<ErrorResponse> badRequestException(Exception exception) {
+    return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
+  }
+
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorResponse> notFoundException(Exception exception) {
