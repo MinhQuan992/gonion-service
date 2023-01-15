@@ -10,4 +10,7 @@ public class Constants {
 
   public static final String PASSWORD_PATTERN =
       "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]*$";
+
+  public static final long RESET_TOKEN_EXPIRATION_TIME = 1000 * 60 * 10;
+  public static final String SENDER_EMAIL = "gonion.codingblog@gmail.com";
 }

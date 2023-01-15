@@ -24,6 +24,7 @@ public class SecurityConfiguration {
   private static final String[] AUTH_WHITELIST = {
       "/test",
       "/auth/**",
+      "/reset-password/**",
       "/docs/**",
   };
 

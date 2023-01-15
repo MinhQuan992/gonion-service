@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "value.aws-access-key-id",
+      "type": "java.lang.String",
+      "description": "Access key ID to use AWS SDK."
+    },
+    {
+      "name": "value.aws-secret-access-key",
+      "type": "java.lang.String",
+      "description": "Secret access key to use AWS SDK."
+    },
+    {
+      "name": "value.front-end-base-url",
+      "type": "java.lang.String",
+      "description": "Base URL for the front-end application."
+    }
+  ] }
