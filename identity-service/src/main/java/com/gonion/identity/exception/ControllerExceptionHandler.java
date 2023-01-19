@@ -37,7 +37,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({
       InvalidResetTokenException.class,
-      ExpiredResetTokenException.class})
+      ExpiredResetTokenException.class,
+      WrongPasswordException.class})
   public ResponseEntity<ErrorResponse> badRequestException(Exception exception) {
     return new ResponseEntity<>(new ErrorResponse(exception.getMessage()), HttpStatus.BAD_REQUEST);
   }
