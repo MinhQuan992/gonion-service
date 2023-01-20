@@ -3,6 +3,7 @@ package com.gonion.identity.controller;
 import com.gonion.identity.framework.api.ProfileApi;
 import com.gonion.identity.framework.dto.GeneralResponse;
 import com.gonion.identity.framework.dto.UserResponse;
+import com.gonion.identity.framework.dto.profile.ChangeInfoRequest;
 import com.gonion.identity.framework.dto.profile.ChangePasswordRequest;
 import com.gonion.identity.service.BaseService;
 import com.gonion.identity.service.ProfileService;
@@ -24,5 +25,10 @@ public class ProfileController implements ProfileApi {
   @Override
   public ResponseEntity<GeneralResponse> changePassword(ChangePasswordRequest request) {
     return ResponseEntity.ok(profileService.changePassword(request));
+  }
+
+  @Override
+  public ResponseEntity<UserResponse> changeInfo(ChangeInfoRequest request) {
+    return ResponseEntity.ok(profileService.changeInfo(request));
   }
 }
